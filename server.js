@@ -5,16 +5,16 @@ require('dotenv').config();
 
 const app = express();
 
-// Middlewares
+// 1. MIDDLEWARES
 app.use(express.json());
 app.use(cors());
 
-// Conexión a MongoDB Atlas
+// 2. CONEXIÓN A MONGO DB ATLAS
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log("🔥 Conexión exitosa a MongoDB Atlas"))
   .catch(err => console.error("❌ Error de conexión:", err));
 
-// Esquema NoSQL de Mongoose (Documento JSON)
+// 3. ESQUEMA Y MODELO
 const ProductoSchema = new mongoose.Schema({
   nombre: String,
   precio: Number,
@@ -23,9 +23,7 @@ const ProductoSchema = new mongoose.Schema({
 
 const Producto = mongoose.model('Producto', ProductoSchema);
 
-// --- RUTAS DE LA API ---
-
-// 1. GET: Obtener todos los productos
+// 4. RUTAS DE LA API
 app.get('/productos', async (req, res) => {
   try {
     const productos = await Producto.find();
@@ -35,7 +33,6 @@ app.get('/productos', async (req, res) => {
   }
 });
 
-// 2. POST: Insertar un nuevo producto
 app.post('/productos', async (req, res) => {
   try {
     const nuevoProducto = new Producto(req.body);
@@ -46,7 +43,7 @@ app.post('/productos', async (req, res) => {
   }
 });
 
-// Configuración del Puerto
+// 5. ARRANQUE DEL SERVIDOR
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Servidor activo en puerto ${PORT}`);
