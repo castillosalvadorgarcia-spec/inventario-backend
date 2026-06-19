@@ -11,7 +11,7 @@ app.use(cors());
 
 // 2. CONEXIÓN A MONGO DB ATLAS
 mongoose.connect(process.env.MONGO_URI)
-  .then(() => console.log("🔥 Conexión exitosa a MongoDB Atlas"))
+  .then(() => console.log("🔥 Conexión exitosa a MongoDB Atlas (Inventario CRUD)"))
   .catch(err => console.error("❌ Error de conexión:", err));
 
 // 3. ESQUEMA Y MODELO
@@ -23,7 +23,9 @@ const ProductoSchema = new mongoose.Schema({
 
 const Producto = mongoose.model('Producto', ProductoSchema);
 
-// 4. RUTAS DE LA API
+// 4. RUTAS DE LA API (CRUD COMPLETO)
+
+// READ: Obtener todos los productos
 app.get('/productos', async (req, res) => {
   try {
     const productos = await Producto.find();
@@ -33,6 +35,7 @@ app.get('/productos', async (req, res) => {
   }
 });
 
+// CREATE: Registrar un nuevo producto
 app.post('/productos', async (req, res) => {
   try {
     const nuevoProducto = new Producto(req.body);
@@ -40,6 +43,28 @@ app.post('/productos', async (req, res) => {
     res.json({ mensaje: "¡Producto registrado con éxito!", nuevoProducto });
   } catch (error) {
     res.status(500).json({ mensaje: "Error al registrar producto", error });
+  }
+});
+
+// UPDATE: Modificar un producto existente por su ID
+app.put('/productos/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const productoActualizado = await Producto.findByIdAndUpdate(id, req.body, { new: true });
+    res.json({ mensaje: "¡Producto actualizado con éxito!", productoActualizado });
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al actualizar el producto", error });
+  }
+});
+
+// DELETE: Eliminar un producto por su ID
+app.delete('/productos/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    await Producto.findByIdAndDelete(id);
+    res.json({ mensaje: "¡Producto eliminado con éxito!" });
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error al eliminar el producto", error });
   }
 });
 
